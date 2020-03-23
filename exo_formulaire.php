@@ -28,9 +28,33 @@
             <button type="submit" name="bouton" class="btn btn-primary mb-2">Envoyé</button>
         </div>
     </form>
-
-    
-        </body>
+    <h1>equipement</h1>
+    <form method="post" action="exo_formulaire.php">
+        <div class="formulaire">
+            <input type="text" class="form-control" placeholder="id" name="id_equipement" value="<?= htmlentities($id_equipement ?? '') ?>">
+        </div>
+        <div class="formulaire">
+            <input type="text" class="form-control"  placeholder="nom equipement" name="nom_equipement" value="<?= htmlentities($nom_equipement ?? '') ?>">
+        </div>
+        <div class="boutons">
+            <button type="submit" name="boutons" class="btn btn-primary mb-2">Envoyé</button>
+        </div>
+    </form>
+    <form action="exo_formulaire.php" method="post">
+           <div class="formulaire">
+            <input type="text" class="form-control" placeholder="Numero Salle" name="numero_salle">
+           </div>
+           <div class="formulaire">
+            <input type="text" class="form-control" placeholder="Nbr de places" name="capacite_salle">
+           </div>
+         </div>
+         </div>
+              <div class="boutonss">
+                <button type="submit" class="btn btn-primary mb-2">Envoyé</button>
+              </div>
+            
+      </form>
+    </body>
         <?php
         $user = "dbu164958";
         $pass = "***REMOVED***";
@@ -47,7 +71,8 @@
         if ($id_cinema === null || $nom_cinema === null || $ville_cinema === null || $adresse_cinema === null || $mail_cinema === null || $telephone_cinema === null) {
         echo '404 error';
      }else {
-       $pdoStat = $dbh->prepare ("INSERT INTO cinema (id_cinema, nom_cinema, ville_cinema, adresse_cinema, mail_cinema, telephone_cinema) VALUES (:id_cinema, :nom_cinema, :ville_cinema, :adresse_cinema, :mail_cinema, :telephone_cinema)") ;
+       $pdoStat = $dbh->prepare ("INSERT INTO cinema (id_cinema, nom_cinema, ville_cinema, adresse_cinema, mail_cinema, telephone_cinema) 
+       VALUES (:id_cinema, :nom_cinema, :ville_cinema, :adresse_cinema, :mail_cinema, :telephone_cinema)") ;
         
         $pdoStat->bindValue(':id_cinema', $id_cinema);
         $pdoStat->bindValue(':nom_cinema', $nom_cinema);
@@ -57,7 +82,38 @@
         $pdoStat->bindValue(':telephone_cinema', $telephone_cinema);
         
         $pdoStat->execute();
+         $pdoStat->closeCursor();
     }
+     }
+     
+
+     if (isset($_POST['boutons'])){
+        $id_equipement = empty($_POST['id_equipement']) ? null : $_POST['id_equipement'];
+        $nom_equipement = empty($_POST['nom_equipement']) ? null : $_POST['nom_equipement'];
+        if ($id_equipement === null || $nom_equipement === null ) {
+        echo '404 error';
+     }else {
+       $pdoStat = $dbh->prepare ("INSERT INTO equipement (id_equipement, nom_equipement) 
+       VALUES (:id_equipement, :nom_equipement)") ;
+        
+        $pdoStat->bindValue(':id_equipement', $id_equipement);
+        $pdoStat->bindValue(':nom_equipement', $nom_equipement);
+        
+        $pdoStat->execute();
+         $pdoStat->closeCursor();
+    }
+     }
+     $numero_salle=$_POST['numero_salle'];
+      $capacite_salle=$_POST['capacite_salle'];
+      $pdoStat = $dbh->prepare("INSERT INTO salle (numero_salle, capacite_salle, id_cinema) VALUES ( :numero_salle, :capacite_salle, :id_cinema)");
+      $pdoStat->execute(array(
+          ':numero_salle' => $numero_salle,
+          ':id_cinema' => 5,
+          ':capacite_salle'=>$capacite_salle));
+
+    
+     
+     //afficher le contenu //
         $sth = $dbh->prepare("SELECT id_cinema, nom_cinema, ville_cinema, adresse_cinema, mail_cinema, telephone_cinema FROM cinema");
     $sth->execute();
     $result = $sth->fetchAll();
@@ -87,8 +143,5 @@
         echo   "salle <br>". '<br> ' .$tableau['id_salle']. '<br>' .$tableau['numero_salle']. '<br>'.$tableau['capacite_salle']. '<br>'.$tableau['id_cinema']. '<br>';
     }
      
-     }
-    
-
 ?>
-        </html>
+     </html>
